@@ -1,10 +1,12 @@
 package kz.bitlab.db;
 
 import kz.bitlab.models.Item;
+import kz.bitlab.models.User;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class DBManager {
     private static Connection connection;
@@ -15,7 +17,7 @@ public class DBManager {
             connection = DriverManager.getConnection(
                     "jdbc:postgresql://localhost:5432/G118",
                     "postgres",
-                    "postgres"
+                    "12070107Don"
             );
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,5 +44,23 @@ public class DBManager {
             e.printStackTrace();
         }
         return items;
+    }
+
+    public static boolean login(String email, String password){
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM sprint.users WHERE email = ? AND password = ?"
+            );
+            statement.setString(1,email);
+            statement.setString(2,password);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                System.out.println("Success");
+                return true;
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }
