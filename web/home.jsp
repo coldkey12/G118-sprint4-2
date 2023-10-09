@@ -18,23 +18,39 @@
     <div class="col-8 mx-auto mt-2">
         <h1 class="text-center">WELCOME TO BITLAB SHOP</h1>
         <h5 class="text-center">Electronic devices with high quality and service</h5>
-        <div class="d-flex">
+        <table class="table">
+            <tbody>
             <%
                 List<Item> items = (List<Item>) request.getAttribute("items");
+                int itemCount = 0;
                 for (Item item : items) {
+                    if (itemCount % 3 == 0) {
             %>
-            <div class="card col-4 m-2">
-                <div class="card-header"><%=item.getName()%></div>
-                <div class="card-body">
-                    <h5><%=item.getPrice()%></h5>
-                    <p><%=item.getDescription()%></p>
-                    <a href="#" class="btn btn-primary w-100">BUY NOW</a>
-                </div>
-            </div>
+            <tr>
+                <%
+                    }
+                %>
+                <td>
+                    <div class="card m-2">
+                        <div class="card-header"><%=item.getName()%></div>
+                        <div class="card-body">
+                            <h5><%=item.getPrice()%></h5>
+                            <p><%=item.getDescription()%></p>
+                            <a href="#" class="btn btn-primary w-100">BUY NOW</a>
+                        </div>
+                    </div>
+                </td>
+                <%
+                    itemCount++;
+                    if (itemCount % 3 == 0) {
+                %>
+            </tr>
             <%
+                    }
                 }
             %>
-        </div>
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
