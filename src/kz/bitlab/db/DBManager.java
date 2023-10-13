@@ -146,4 +146,66 @@ public class DBManager {
             e.printStackTrace();
         }
     }
+
+    public static void updateItem(Item item) {
+        if(item==null){
+            return;
+        }
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE sprint.items " +
+                            "set name = ?, description = ?, price = ? " +
+                            "WHERE id = ?"
+            );
+
+            statement.setString(1,item.getName());
+            statement.setString(2,item.getDescription());
+            statement.setDouble(3,item.getPrice());
+            statement.setLong(4,item.getId());
+            statement.executeUpdate();
+            statement.close();
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static User getUserByEmail(String email){
+        User user = null;
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM sprint.users WHERE email = ?"
+            );
+            statement.setString(1,email);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                user = new User();
+                user.setId(resultSet.getLong("id"));
+                user.setEmail(email);
+                user.setPassword(resultSet.getString("password"));
+                user.setFullName(resultSet.getString("full_name"));
+            }
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+
+    public static void addUser(User user) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO sprint.users(email,password,full_name) " +
+                            "VALUES(?,?,?)"
+            );
+            statement.setString(1, user.getEmail());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getFullName());
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

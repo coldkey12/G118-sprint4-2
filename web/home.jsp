@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <%@include file="navbar.jsp"%>
+<%@include file="navbar.jsp"%>
     <div class="col-8 mx-auto">
         <h1 class="text-center">WELCOME TO BITLAB SHOP</h1>
         <h5 class="text-center">Electronic devices with high quality and service</h5>
@@ -69,16 +69,16 @@
                     <a href="#" class="btn btn-primary w-100" style="margin-bottom: 10px">BUY NOW</a><br>
 
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItemModal<%=item.getId()%>">
                         - DELETE ITEM
                     </button>
 
                     <form action="/delete-item" method="post">
-                        <div class="modal fade" id="deleteItemModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteItemModal<%=item.getId()%>" tabindex="-1" aria-labelledby="deleteItemModalLabel<%=item.getId()%>" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="exampleModalLable1">Modal title</h1>
+                                        <h1 class="modal-title fs-5" id="deleteItemModalLabel<%=item.getId()%>">Delete Item</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -92,6 +92,47 @@
                             </div>
                         </div>
                     </form>
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateItemModal<%=item.getId()%>">
+                        - UPDATE ITEM
+                    </button>
+
+                    <form action="/update-item" method="post">
+                        <div class="modal fade" id="updateItemModal<%=item.getId()%>" tabindex="-1" aria-labelledby="updateItemModalLabel<%=item.getId()%>" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="updateItemModalLabel<%=item.getId()%>">Delete Item</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input name="item_name_update" type="text" class="form-control mt-1"
+                                                placeholder="Insert name...">
+                                        <input name="item_description_update" type="text" class="form-control mt-1"
+                                               placeholder="Insert description...">
+                                        <input name="item_price_update" type="number" class="form-control mt-1"
+                                               placeholder="Insert price...">
+                                        <select name="item_city_id_update" class="form-select">
+                                            <%
+                                                List<City> cities1 = (List<City>) request.getAttribute("cities");
+                                                for (City city : cities1){
+                                            %>
+                                            <option value="<%=city.getId()%>"><%=city.getName() + " / " + city.getCode()%></option>
+                                            <%
+                                                }
+                                            %>
+                                        </select>
+                                        <input type="hidden" name="id" value="<%=item.getId()%>">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button class="btn btn-primary">UPDATE ITEM</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
                 </div>
             </div>
             <%

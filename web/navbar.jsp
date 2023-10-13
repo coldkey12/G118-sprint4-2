@@ -1,4 +1,4 @@
-<%--
+<%@ page import="kz.bitlab.models.User" %><%--
   Created by IntelliJ IDEA.
   User: coldkey
   Date: 06.10.2023
@@ -22,6 +22,17 @@
                     <a class="nav-link" href="/">All products</a>
                 </li>
             </ul>
+            <%
+                User user = (User) session.getAttribute("currentUser");
+                if(user != null){
+            %>
+            <form class="d-flex" action="/sign-out" method="post">
+                <h1><%=user.getFullName()%></h1>
+                <button class="btn btn-outline-success" type="submit">SIGN OUT</button>
+            </form>
+            <%
+                }
+            %>
         </div>
     </div>
 </nav>

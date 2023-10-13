@@ -5,14 +5,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kz.bitlab.db.DBManager;
 
 import java.io.IOException;
 
-@WebServlet(value = "/sign")
-public class LoginPageServlet extends HttpServlet {
+@WebServlet(value = "/sign-out")
+public class SignOutServlet extends HttpServlet {
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("auth.jsp").forward(req,resp);
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getSession().removeAttribute("currentUser");
+        resp.sendRedirect("/");
     }
 }
