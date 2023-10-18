@@ -1,10 +1,21 @@
 package kz.bitlab.models;
 
+import java.time.LocalDate;
+
 public class User {
     private Long id;
     private String email;
     private String password;
     private String fullName;
+    private LocalDate birthDate;
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
 
     public Long getId() {
         return id;
@@ -41,10 +52,11 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String email, String password, String fullName) {
+    public User(Long id, String email, String password, String fullName, LocalDate birthDate) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.fullName = fullName;
+        this.birthDate = birthDate;
     }
 }

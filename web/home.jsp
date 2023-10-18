@@ -66,6 +66,7 @@
                     <h5>$<%=item.getPrice()%></h5>
                     <p><%=item.getDescription()%></p>
                     <p><%=item.getCity().getName() + " / " + item.getCity().getCode()%></p>
+                    <img src="img.png" class="img-thumbnail" alt="...">
                     <a href="#" class="btn btn-primary w-100" style="margin-bottom: 10px">BUY NOW</a><br>
 
                     <!-- Button trigger modal -->

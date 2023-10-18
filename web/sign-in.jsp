@@ -57,6 +57,7 @@
     }
 %>
 
+
 <div class="col-6 mx-auto">
 <form action="/sign-in" method="post">
     <div class="mb-3">
@@ -70,11 +71,10 @@
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 
+</form>
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#signUpModel">
         Make a new account
     </button>
-
-</form>
     <form action="/sign-up" method="post">
     <div class="modal fade" id="signUpModel" tabindex="-1" aria-labelledby="signUpModel" aria-hidden="true">
         <div class="modal-dialog">
