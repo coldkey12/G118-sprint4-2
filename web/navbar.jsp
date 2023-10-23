@@ -15,18 +15,21 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item" style="margin-left: 1000px">
+                <li class="nav-item" style="margin-left: 470px">
                     <a class="nav-link" href="/sign-in">Sign in</a>
                 </li>
                 <li class="nav-item" style="margin-left: 100px">
                     <a class="nav-link" href="/">All products</a>
+                </li>
+                <li class="nav-item" style="margin-left: 100px">
+                    <a class="nav-link" href="/blogs">Blogs</a>
                 </li>
             </ul>
             <%
                 User user = (User) session.getAttribute("currentUser");
                 if(user != null){
             %>
-            <form class="d-flex" action="/sign-out" method="post">
+            <form class="d-flex" action="/sign-out" method="post" style="margin-left: 500px">
                 <h1><%=user.getFullName()%></h1>
                 <button class="btn btn-outline-success" type="submit">SIGN OUT</button>
             </form>

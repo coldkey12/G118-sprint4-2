@@ -1,10 +1,10 @@
 package kz.bitlab.db;
 
-import kz.bitlab.models.City;
-import kz.bitlab.models.Item;
-import kz.bitlab.models.User;
+import kz.bitlab.models.*;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +28,7 @@ public class DBManager {
     public static List<Item> getItems(){
         List<Item> items = new ArrayList<>();
         try {
-            PreparedStatement statement = connection.prepareStatement(
+            var statement = prepare(
                     "SELECT i.id, i.name, i.description, i.price, i.city_id, " +
                             "c.name as city_name, c.code FROM sprint.items i " +
                             "INNER JOIN sprint.cities c on i.city_id = c.id " +
@@ -207,5 +207,176 @@ public class DBManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    public static List<Blog> getBlogs() {
+        List<Blog> blogs = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM sprint.blogs ORDER BY post_date DESC"
+            );
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                Blog blog = new Blog();
+                blog.setId(resultSet.getLong("id"));
+                blog.setTitle(resultSet.getString("title"));
+                blog.setContent(resultSet.getString("content"));
+                blog.setPostDate(resultSet.getObject("post_date", LocalDateTime.class));
+                Long userId = resultSet.getLong("user_id");
+                blog.setUser(getUserById(userId));
+                blogs.add(blog);
+            }
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return blogs;
+    }
+
+    public static User getUserById(Long id){
+        User user = null;
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM sprint.users WHERE id = ?"
+            );
+            statement.setLong(1,id);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                user = new User();
+                user.setId(id);
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                user.setFullName(resultSet.getString("full_name"));
+            }
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public static void addBlog(Blog blog) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO sprint.blogs(title,content,post_date,user_id) " +
+                            "VALUES(?,?,now(),?)"
+            );
+            statement.setString(1,blog.getTitle());
+            statement.setString(2,blog.getContent());
+            statement.setLong(3,blog.getUser().getId());
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Blog getBlogById(Long id) {
+        Blog blog = null;
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT b.*, u.email, u.password, u.full_name " +
+                            "FROM sprint.blogs b " +
+                            "INNER JOIN sprint.users u " +
+                            "ON b.user_id = u.id " +
+                            "WHERE b.id = ?"
+            );
+            statement.setLong(1,id);
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()){
+                blog = new Blog();
+                blog.setId(id);
+                blog.setTitle(resultSet.getString("title"));
+                blog.setContent(resultSet.getString("content"));
+                blog.setPostDate(resultSet.getObject("post_date", LocalDateTime.class));
+
+                User user = new User();
+                user.setId(resultSet.getLong("user_id"));
+                user.setEmail(resultSet.getString("email"));
+                user.setPassword(resultSet.getString("password"));
+                user.setFullName(resultSet.getString("full_name"));
+                blog.setUser(user);
+            }
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return blog;
+    }
+
+    public static void updateBlog(Blog blog) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE sprint.blogs " +
+                            "SET title = ?, content = ?, user_id = ? " +
+                            "WHERE id = ?"
+            );
+            statement.setString(1, blog.getTitle());
+            statement.setString(2, blog.getContent());
+            statement.setLong(3, blog.getUser().getId());
+            statement.setLong(4, blog.getId());
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Comment> getCommentsByBlogId(Long blogId) {
+        List<Comment> comments = new ArrayList<>();
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT c.*, b.title, u.full_name FROM sprint.comments c " +
+                            "INNER JOIN sprint.blogs b on c.blog_id = b.id " +
+                            "INNER JOIN sprint.users u on c.user_id = u.id " +
+                            "WHERE c.blog_id = ? " +
+                            "ORDER BY c.post_date DESC "
+            );
+            statement.setLong(1,blogId);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                Comment comment = new Comment();
+                comment.setId(resultSet.getLong("id"));
+                comment.setDescription(resultSet.getString("description"));
+                comment.setPostDate(resultSet.getObject("post_date", LocalDateTime.class));
+
+                User user = new User();
+                user.setId(resultSet.getLong("user_id"));
+                user.setFullName(resultSet.getString("full_name"));
+                comment.setUser(user);
+
+                Blog blog = new Blog();
+                blog.setId(resultSet.getLong("blog_id"));
+                blog.setTitle(resultSet.getString("title"));
+                comment.setBlog(blog);
+
+                comments.add(comment);
+            }
+            statement.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return comments;
+    }
+
+    public static void addComment(String commentDescription, Long blogId, Long userId) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO sprint.comments(description, user_id, blog_id) " +
+                            "VALUES(?,?,?)"
+            );
+            statement.setString(1,commentDescription);
+            statement.setLong(2, userId);
+            statement.setLong(3,blogId);
+            statement.executeUpdate();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static PreparedStatement prepare(String sqlQuery) throws SQLException {
+        return connection.prepareStatement(sqlQuery);
     }
 }
